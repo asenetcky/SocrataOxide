@@ -1,0 +1,13 @@
+[package]
+name = "socrata_oxide"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.17", features = ["derive"] }
+
+[dev-dependencies]
+assert_cmd = "2.0.16"
+predicates = "3.1.2"
+pretty_assertions = "1.4.0"
+rand = "0.8.5"
