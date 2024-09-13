@@ -1,3 +1,6 @@
+use crate::cli::*;
+use clap::Parser;
+
 pub mod cli;
 
 fn main() {

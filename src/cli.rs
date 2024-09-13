@@ -6,7 +6,7 @@ use std::io::{self, BufRead, BufReader, Write};
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
 /// My Rust version of `uniq`
-struct Args {
+pub struct Args {
     /// Input file
     #[arg(default_value = "-", value_name = "IN_FILE")]
     in_file: String,
@@ -20,7 +20,7 @@ struct Args {
     count: bool,
 }
 
-fn run(args: Args) -> () {
+pub fn run(args: Args) -> () {
     println!("{:?}", args);
 }
 
@@ -74,4 +74,3 @@ fn run(args: Args) -> () {
 //         _ => Ok(Box::new(BufReader::new(File::open(filename)?))),
 //     }
 // }
-
