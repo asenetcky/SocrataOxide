@@ -9,3 +9,9 @@ in my personal life and my professional life.
 I've been learning a bit of Rust and
 I wanted to take something I was familiar with in R
 and rebuild it in Rust.
+
+## Project Goals
+
+I want to use this learn clap and reqwest and wrap
+it all up as little cli project, at least initially.
+
