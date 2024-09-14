@@ -1,23 +1,22 @@
 use anyhow::{anyhow, Result};
 use clap::Parser;
-use std::fs::File;
-use std::io::{self, BufRead, BufReader, Write};
+// use std::fs::File;
+// use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
 /// My Rust version of RSocrata
 pub struct Args {
-    /// Input file
-    #[arg(default_value = "-", value_name = "IN_FILE")]
-    in_file: String,
-
-    /// Output file
-    #[arg(value_name = "OUT_FILE")]
-    out_file: Option<String>,
-
-    /// prefix line by number of occurrences
-    #[arg(short, long)]
-    count: bool,
+    /// URL
+    #[arg(short, long, value_name = "URL")]
+    url: String,
+    ///// Output file
+    //#[arg(value_name = "OUT_FILE")]
+    //out_file: Option<String>,
+    //
+    ///// prefix line by number of occurrences
+    //#[arg(short, long)]
+    //count: bool,
 }
 
 pub fn run(args: Args) -> () {
