@@ -10,7 +10,7 @@ use reqwest::{Response, Url};
 pub struct Args {
     /// URL
     #[arg(value_name = "URL")]
-    dataset_url: Vec<String>,
+    dataset_url: String, // work on vectors later
 
     /// Api Key
     #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
@@ -33,6 +33,7 @@ pub struct Args {
         value_name = "PASSWORD"
     )]
     password: String,
+    // something to flag a download maybe?
 }
 
 enum FileType {
@@ -59,8 +60,8 @@ pub fn run(args: Args) -> Result<()> {
     // or looke for a better way to grab MIME type
     // focus on jsons and .csv for now
 
-    let _file_type = url.split('.').last().unwrap();
-
+    let file_type = url.split('.').last().unwrap();
+    println!("{:?}", file_type);
     Ok(())
 }
 
