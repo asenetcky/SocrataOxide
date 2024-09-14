@@ -36,6 +36,18 @@ pub struct Args {
 
 pub fn run(args: Args) -> Result<()> {
     println!("{:?}", args);
+
+    let url = args.dataset_url;
+    let _api_key = args.api_key;
+    let _username = args.username;
+    let _password = args.password;
+
+    // need to grab the file type from the url
+    // or looke for a better way to grab MIME type
+    // focus on jsons and .csv for now
+
+    let _file_type = url.split('.').last().unwrap();
+
     Ok(())
 }
 
