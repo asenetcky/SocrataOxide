@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Ok, Result};
+use anyhow::{Ok, Result};
 use clap::Parser;
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
@@ -8,15 +8,20 @@ use clap::Parser;
 /// My Rust version of RSocrata
 pub struct Args {
     /// URL
-    #[arg(short, long, value_name = "URL")]
-    url: String,
-    ///// Output file
-    //#[arg(value_name = "OUT_FILE")]
-    //out_file: Option<String>,
-    //
-    ///// prefix line by number of occurrences
-    //#[arg(short, long)]
-    //count: bool,
+    #[arg(short = 'u', long = "URL", value_name = "URL")]
+    dataset_url: String,
+
+    /// Api Key
+    #[arg(short = 'k', long = "key", value_name = "API_KEY")]
+    api_key: String,
+
+    /// Username
+    #[arg(short = 'n', long = "username", value_name = "USERNAME")]
+    username: String,
+
+    /// Password
+    #[arg(short = 'p', long = "password", value_name = "PASSWORD")]
+    password: String,
 }
 
 pub fn run(args: Args) -> Result<()> {
