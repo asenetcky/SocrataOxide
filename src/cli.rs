@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Ok, Result};
 use clap::Parser;
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
@@ -19,8 +19,9 @@ pub struct Args {
     //count: bool,
 }
 
-pub fn run(args: Args) -> () {
+pub fn run(args: Args) -> Result<()> {
     println!("{:?}", args);
+    Ok(())
 }
 
 // fn run(args: Args) -> Result<()> {
@@ -73,4 +74,3 @@ pub fn run(args: Args) -> () {
 //         _ => Ok(Box::new(BufReader::new(File::open(filename)?))),
 //     }
 // }
-
