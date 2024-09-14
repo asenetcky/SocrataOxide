@@ -34,6 +34,11 @@ pub struct Args {
     password: String,
 }
 
+enum FileType {
+    Json,
+    Csv,
+}
+
 pub fn run(args: Args) -> Result<()> {
     println!("{:?}", args);
 
