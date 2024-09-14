@@ -8,19 +8,29 @@ use clap::Parser;
 /// My Rust version of RSocrata
 pub struct Args {
     /// URL
-    #[arg(short = 'u', long = "URL", value_name = "URL")]
+    #[arg(value_name = "URL")]
     dataset_url: String,
 
     /// Api Key
-    #[arg(short = 'k', long = "key", value_name = "API_KEY")]
+    #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
     api_key: String,
 
     /// Username
-    #[arg(short = 'n', long = "username", value_name = "USERNAME")]
+    #[arg(
+        short = 'n',
+        long = "username",
+        default_value = "-",
+        value_name = "USERNAME"
+    )]
     username: String,
 
     /// Password
-    #[arg(short = 'p', long = "password", value_name = "PASSWORD")]
+    #[arg(
+        short = 'p',
+        long = "password",
+        default_value = "-",
+        value_name = "PASSWORD"
+    )]
     password: String,
 }
 
