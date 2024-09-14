@@ -1,5 +1,6 @@
 use anyhow::{Ok, Result};
 use clap::Parser;
+use reqwest::{Response, Url};
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
 
@@ -9,7 +10,7 @@ use clap::Parser;
 pub struct Args {
     /// URL
     #[arg(value_name = "URL")]
-    dataset_url: String,
+    dataset_url: Vec<String>,
 
     /// Api Key
     #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
@@ -37,6 +38,13 @@ pub struct Args {
 enum FileType {
     Json,
     Csv,
+    UnknownMimeType,
+}
+
+struct Output {
+    url: Url,
+    file_type: FileType,
+    response: Response,
 }
 
 pub fn run(args: Args) -> Result<()> {
