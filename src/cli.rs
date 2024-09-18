@@ -1,6 +1,7 @@
 use anyhow::{Ok, Result};
 use clap::Parser;
-use reqwest::{Response, Url};
+use polars::prelude::*;
+use reqwest::{blocking, Response, Url};
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
 
@@ -37,8 +38,8 @@ pub struct Args {
 }
 
 enum FileType {
-    Json,
-    Csv,
+    Json(String),
+    Csv(String),
     UnknownMimeType,
 }
 
@@ -60,8 +61,44 @@ pub fn run(args: Args) -> Result<()> {
     // or looke for a better way to grab MIME type
     // focus on jsons and .csv for now
 
+    //
+    // println!("{:?}", file_type);
+    grab_data(&url)?;
+    Ok(())
+}
+
+pub fn grab_data(url: &str) -> Result<()> {
     let file_type = url.split('.').last().unwrap();
-    println!("{:?}", file_type);
+
+    match file_type {
+        "json" => {
+            println!("JSON");
+            let response = blocking::get(url)?;
+            let json: serde_json::Value = response.json()?;
+            let json_str = serde_json::to_string(&json)?;
+            let cursor = std::io::Cursor::new(json_str);
+            let df = polars::prelude::JsonReader::new(cursor).finish()?;
+            println!("{}", df);
+        }
+        "csv" => {
+            println!("CSV");
+            let response = blocking::get(url)?;
+            let csv = response.text()?;
+            let cursor = std::io::Cursor::new(csv);
+            let df = polars::prelude::CsvReader::new(cursor).finish()?;
+            println!("{}", df);
+        }
+        _ => {
+            println!("Unknown file type");
+        }
+    }
+
+    // let url = "https://data.ct.gov/resource/qhtt-czu2.json";
+    // let response_json: serde_json::Value = reqwest::blocking::get(url)?.json()?;
+    // let json = serde_json::to_string(&response_json)?;
+    // let cursor = std::io::Cursor::new(json);
+    // let df = polars::prelude::JsonReader::new(cursor).finish()?;
+    // println!("{}", df);
     Ok(())
 }
 
