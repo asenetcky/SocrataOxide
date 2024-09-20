@@ -5,7 +5,7 @@ use clap::Parser;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
-/// My Rust version of RSocratae
+/// My Rust version of RSocrata written as a cli app
 pub struct Args {
     /// URL
     #[arg(value_name = "URL")]
