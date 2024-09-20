@@ -1,13 +1,11 @@
-use anyhow::{Ok, Result};
+use crate::data::*;
 use clap::Parser;
-use polars::prelude::*;
-use reqwest::{blocking, Response, Url};
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
-/// My Rust version of RSocrata
+/// My Rust version of RSocratae
 pub struct Args {
     /// URL
     #[arg(value_name = "URL")]
@@ -37,18 +35,6 @@ pub struct Args {
     // something to flag a download maybe?
 }
 
-enum FileType {
-    Json(String),
-    Csv(String),
-    UnknownMimeType,
-}
-
-struct Output {
-    url: Url,
-    file_type: FileType,
-    response: Response,
-}
-
 pub fn run(args: Args) -> Result<()> {
     println!("{:?}", args);
 
@@ -64,41 +50,6 @@ pub fn run(args: Args) -> Result<()> {
     //
     // println!("{:?}", file_type);
     grab_data(&url)?;
-    Ok(())
-}
-
-pub fn grab_data(url: &str) -> Result<()> {
-    let file_type = url.split('.').last().unwrap();
-
-    match file_type {
-        "json" => {
-            println!("JSON");
-            let response = blocking::get(url)?;
-            let json: serde_json::Value = response.json()?;
-            let json_str = serde_json::to_string(&json)?;
-            let cursor = std::io::Cursor::new(json_str);
-            let df = polars::prelude::JsonReader::new(cursor).finish()?;
-            println!("{}", df);
-        }
-        "csv" => {
-            println!("CSV");
-            let response = blocking::get(url)?;
-            let csv = response.text()?;
-            let cursor = std::io::Cursor::new(csv);
-            let df = polars::prelude::CsvReader::new(cursor).finish()?;
-            println!("{}", df);
-        }
-        _ => {
-            println!("Unknown file type");
-        }
-    }
-
-    // let url = "https://data.ct.gov/resource/qhtt-czu2.json";
-    // let response_json: serde_json::Value = reqwest::blocking::get(url)?.json()?;
-    // let json = serde_json::to_string(&response_json)?;
-    // let cursor = std::io::Cursor::new(json);
-    // let df = polars::prelude::JsonReader::new(cursor).finish()?;
-    // println!("{}", df);
     Ok(())
 }
 
