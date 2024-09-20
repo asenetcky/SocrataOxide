@@ -1,5 +1,4 @@
 use crate::cli::*;
-use crate::data::*;
 use clap::Parser;
 
 pub mod cli;
