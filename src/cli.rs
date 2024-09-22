@@ -1,4 +1,5 @@
 use crate::data::*;
+use anyhow::Result;
 use clap::Parser;
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
@@ -43,12 +44,6 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
-    // need to grab the file type from the url
-    // or looke for a better way to grab MIME type
-    // focus on jsons and .csv for now
-
-    //
-    // println!("{:?}", file_type);
     grab_data(&url)?;
     Ok(())
 }

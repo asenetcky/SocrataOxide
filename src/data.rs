@@ -15,6 +15,10 @@ struct Output {
     response: Response,
 }
 
+// need to put data in a buffer or something so
+// if we pull monster data sets it doesnt
+// use up all the memory
+
 // pub fn build_output(url: &str) -> Result<Output, reqwest::Error> {
 //     let url = Url::parse(url);
 //     let response = get(url.as_str())?;
