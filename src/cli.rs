@@ -1,31 +1,50 @@
-use anyhow::{Ok, Result};
+use crate::data::*;
+use anyhow::Result;
 use clap::Parser;
 // use std::fs::File;
 // use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
-/// My Rust version of RSocrata
+/// My Rust version of RSocrata written as a cli app
 pub struct Args {
     /// URL
-    #[arg(short = 'u', long = "URL", value_name = "URL")]
-    dataset_url: String,
+    #[arg(value_name = "URL")]
+    dataset_url: String, // work on vectors later
 
     /// Api Key
-    #[arg(short = 'k', long = "key", value_name = "API_KEY")]
+    #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
     api_key: String,
 
     /// Username
-    #[arg(short = 'n', long = "username", value_name = "USERNAME")]
+    #[arg(
+        short = 'n',
+        long = "username",
+        default_value = "-",
+        value_name = "USERNAME"
+    )]
     username: String,
 
     /// Password
-    #[arg(short = 'p', long = "password", value_name = "PASSWORD")]
+    #[arg(
+        short = 'p',
+        long = "password",
+        default_value = "-",
+        value_name = "PASSWORD"
+    )]
     password: String,
+    // something to flag a download maybe?
 }
 
 pub fn run(args: Args) -> Result<()> {
     println!("{:?}", args);
+
+    let url = args.dataset_url;
+    let _api_key = args.api_key;
+    let _username = args.username;
+    let _password = args.password;
+
+    grab_data(&url)?;
     Ok(())
 }
 
