@@ -44,7 +44,11 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
-    grab_data(&url)?;
+    // grab_data(&url)?;
+    let parsed_url = parse_url(&url);
+    let parsed_filetype = parse_filetype(&url);
+    println!("{:?}", parsed_filetype);
+    println!("{:?}", parsed_url);
     Ok(())
 }
 

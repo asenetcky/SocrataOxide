@@ -1,15 +1,17 @@
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use polars::prelude::*;
 use reqwest::header::CONTENT_TYPE;
-use reqwest::{blocking, Error, Response, Url};
+use reqwest::{blocking, Error, Response};
+use url::{ParseError, Url};
 
-enum FileType {
-    Json(String),
-    Csv(String),
+#[derive(Debug)]
+pub enum FileType {
+    Json,
+    Csv,
     UnknownMimeType,
 }
 
-struct Output {
+pub struct Output {
     url: Url,
     file_type: FileType,
     response: Response,
@@ -19,9 +21,27 @@ struct Output {
 // if we pull monster data sets it doesnt
 // use up all the memory
 
-// pub fn build_output(url: &str) -> Result<Output, reqwest::Error> {
-//     let url = Url::parse(url);
-//     let response = get(url.as_str())?;
+pub fn parse_url(url_string: &str) -> Url {
+    Url::parse(url_string).expect("cannot parse {url_string}")
+}
+
+pub fn parse_filetype(url_string: &str) -> FileType {
+    let file_type = url_string
+        .split('.')
+        .last()
+        .expect("url should not be empty");
+
+    match file_type {
+        "json" => FileType::Json,
+        "csv" => FileType::Csv,
+        _ => FileType::UnknownMimeType,
+    }
+}
+
+// pub fn build_output(url: &str) -> Result<Output, anyhow::Error> {
+//     let url = Url::parse(url)?;
+
+//     let response = blocking::get(url.as_str())?;
 //     let file_type = match response.headers().get(CONTENT_TYPE) {
 //         Some(content_type) => {
 //             let content_type = content_type.to_str()?;
