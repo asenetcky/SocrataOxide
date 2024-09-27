@@ -34,6 +34,8 @@ pub struct Args {
     )]
     password: String,
     // something to flag a download maybe?
+    // maybe some helpers for the page vs row number attribute in the api
+    // ^ in case folks dont want everything by default
 }
 
 pub fn run(args: Args) -> Result<()> {
@@ -45,10 +47,12 @@ pub fn run(args: Args) -> Result<()> {
     let _password = args.password;
 
     // grab_data(&url)?;
-    let parsed_url = parse_url(&url);
-    let parsed_filetype = parse_filetype(&url);
-    println!("{:?}", parsed_filetype);
-    println!("{:?}", parsed_url);
+    // let parsed_url = parse_url(&url);
+    // let parsed_filetype = parse_filetype(&url);
+    // println!("{:?}", parsed_filetype);
+    // println!("{:?}", parsed_url);
+    let my_output = build_output(&url);
+    println!("{:?}", my_output);
     Ok(())
 }
 

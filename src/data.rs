@@ -1,8 +1,9 @@
 use anyhow::Result;
 use polars::prelude::*;
-use reqwest::header::CONTENT_TYPE;
 use reqwest::{blocking, Error, Response};
 use url::{ParseError, Url};
+use std::io::Cursor;
+use serde_json::Value;
 
 #[derive(Debug)]
 pub enum FileType {
@@ -11,6 +12,7 @@ pub enum FileType {
     UnknownMimeType,
 }
 
+#[derive(Debug)]
 pub struct Output {
     url: Url,
     file_type: FileType,
@@ -35,6 +37,45 @@ pub fn parse_filetype(url_string: &str) -> FileType {
         "json" => FileType::Json,
         "csv" => FileType::Csv,
         _ => FileType::UnknownMimeType,
+    }
+}
+
+pub fn build_output(url: &str) -> Output {
+    let url = parse_url(url);
+    let file_type = parse_filetype(url.as_str());
+
+    let response =
+       match file_type {
+           FileType::Json => {
+           //     let response_json: serde_json::Value = get(url).unwrap().json().unwrap();
+           //     let json = serde_json::to_string(&response_json).unwrap();
+           //     let cursor = Cursor::new(json);
+           //     JsonReader::new(cursor).finish().unwrap()
+           println!("JSON");
+                      let response = blocking::get(url)?;
+                      let json: serde_json::Value = response.json()?;
+                      let json_str = serde_json::to_string(&json)?;
+                      let cursor = std::io::Cursor::new(json_str);
+                      let df = polars::prelude::JsonReader::new(cursor).finish()?;
+                      println!("{}", df);}
+           FileType::Csv => {
+               blocking::get(url.as_str()).expect("cannot get url")
+               println!("CSV");
+               let response = blocking::get(url).unwrap();
+               let csv = response.text().unwrap();
+               let cursor = std::io::Cursor::new(csv);
+               let df = polars::prelude::CsvReader::new(cursor).finish()?;
+
+           }
+           FileType::UnknownMimeType => {
+               println!("UnknownMimeType");
+           }
+         };
+
+    Output {
+        url,
+        file_type,
+        response,
     }
 }
 
