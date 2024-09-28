@@ -1,9 +1,9 @@
 use anyhow::Result;
 use polars::prelude::*;
 use reqwest::{blocking, Error, Response};
-use url::{ParseError, Url};
-use std::io::Cursor;
 use serde_json::Value;
+use std::io::Cursor;
+use url::{ParseError, Url};
 
 #[derive(Debug)]
 pub enum FileType {
@@ -13,71 +13,81 @@ pub enum FileType {
 }
 
 #[derive(Debug)]
+pub struct Input {
+    url: Url,
+    file_type: FileType,
+}
+
+#[derive(Debug)]
 pub struct Output {
     url: Url,
     file_type: FileType,
     response: Response,
 }
 
-// need to put data in a buffer or something so
-// if we pull monster data sets it doesnt
-// use up all the memory
-
-pub fn parse_url(url_string: &str) -> Url {
-    Url::parse(url_string).expect("cannot parse {url_string}")
-}
-
-pub fn parse_filetype(url_string: &str) -> FileType {
-    let file_type = url_string
-        .split('.')
-        .last()
-        .expect("url should not be empty");
-
-    match file_type {
-        "json" => FileType::Json,
-        "csv" => FileType::Csv,
-        _ => FileType::UnknownMimeType,
+impl Input {
+    pub fn new(url: &str) -> Result<Self> {
+        let url = Url::parse(url)?;
+        let file_type = match url.as_str().split('.').last() {
+            Some("json") => FileType::Json,
+            Some("csv") => FileType::Csv,
+            _ => FileType::UnknownMimeType,
+        };
+        Ok(Self { url, file_type })
     }
 }
 
-pub fn build_output(url: &str) -> Output {
-    let url = parse_url(url);
-    let file_type = parse_filetype(url.as_str());
+impl Output {
+    // pub fn grab_data(input: Input) -> Result<()> {}
 
-    let response =
-       match file_type {
-           FileType::Json => {
-           //     let response_json: serde_json::Value = get(url).unwrap().json().unwrap();
-           //     let json = serde_json::to_string(&response_json).unwrap();
-           //     let cursor = Cursor::new(json);
-           //     JsonReader::new(cursor).finish().unwrap()
-           println!("JSON");
-                      let response = blocking::get(url)?;
-                      let json: serde_json::Value = response.json()?;
-                      let json_str = serde_json::to_string(&json)?;
-                      let cursor = std::io::Cursor::new(json_str);
-                      let df = polars::prelude::JsonReader::new(cursor).finish()?;
-                      println!("{}", df);}
-           FileType::Csv => {
-               blocking::get(url.as_str()).expect("cannot get url")
-               println!("CSV");
-               let response = blocking::get(url).unwrap();
-               let csv = response.text().unwrap();
-               let cursor = std::io::Cursor::new(csv);
-               let df = polars::prelude::CsvReader::new(cursor).finish()?;
-
-           }
-           FileType::UnknownMimeType => {
-               println!("UnknownMimeType");
-           }
-         };
-
-    Output {
-        url,
-        file_type,
-        response,
+    pub fn new(url: Url, file_type: FileType) -> Self {
+        // grab_data(url, file_type)?;
+        Self {
+            url,
+            file_type,
+            response,
+        }
     }
 }
+
+// pub fn build_output(url: &str) -> Output {
+//     let url = parse_url(url);
+//     let file_type = parse_filetype(url.as_str());
+
+//     let response =
+//        match file_type {
+//            FileType::Json => {
+//            //     let response_json: serde_json::Value = get(url).unwrap().json().unwrap();
+//            //     let json = serde_json::to_string(&response_json).unwrap();
+//            //     let cursor = Cursor::new(json);
+//            //     JsonReader::new(cursor).finish().unwrap()
+//            println!("JSON");
+//                       let response = blocking::get(url)?;
+//                       let json: serde_json::Value = response.json()?;
+//                       let json_str = serde_json::to_string(&json)?;
+//                       let cursor = std::io::Cursor::new(json_str);
+//                       let df = polars::prelude::JsonReader::new(cursor).finish()?;
+//                       println!("{}", df);}
+//            FileType::Csv => {
+//                blocking::get(url.as_str()).expect("cannot get url")
+//                println!("CSV");
+//                let response = blocking::get(url).unwrap();
+//                let csv = response.text().unwrap();
+//                let cursor = std::io::Cursor::new(csv);
+//                let df = polars::prelude::CsvReader::new(cursor).finish()?;
+
+//            }
+//            FileType::UnknownMimeType => {
+//                println!("UnknownMimeType");
+//            }
+//          };
+
+//     Output {
+//         url,
+//         file_type,
+//         response,
+//     }
+// }
 
 // pub fn build_output(url: &str) -> Result<Output, anyhow::Error> {
 //     let url = Url::parse(url)?;
