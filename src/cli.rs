@@ -1,8 +1,8 @@
 use crate::data::*;
 use anyhow::Result;
 use clap::Parser;
-// use std::fs::File;
-// use std::io::{self, BufRead, BufReader, Write};
+use std::fs::File;
+use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
@@ -25,6 +25,10 @@ pub struct Args {
     )]
     username: String,
 
+    /// Output File
+    #[arg(value_name = "OUT_FILE")]
+    out_file: Option<String>,
+
     /// Password
     #[arg(
         short = 'p',
@@ -33,18 +37,34 @@ pub struct Args {
         value_name = "PASSWORD"
     )]
     password: String,
-    // something to flag a download maybe?
+    // maybe some helpers for the page vs row number attribute in the api
+    // ^ in case folks dont want everything by default
 }
 
 pub fn run(args: Args) -> Result<()> {
-    println!("{:?}", args);
-
     let url = args.dataset_url;
     let _api_key = args.api_key;
     let _username = args.username;
     let _password = args.password;
 
-    grab_data(&url)?;
+    // let mut out_file: Box<dyn Write> = match &args.out_file {
+    //     Some(out_name) => Box::new(File::create(out_name)?),
+    //     _ => Box::new(io::stdout()),
+    // };
+
+    // let mut print = |num: u64, text: &str| -> Result<()> {
+    //     if num > 0 {
+    //         if args.count {
+    //             write!(out_file, "{num:>4} {text}")?;
+    //         } else {
+    //             write!(out_file, "{text}")?;
+    //         }
+    //     };
+    //     Ok(())
+    // };
+
+    let data = Data::new(&url)?;
+
     Ok(())
 }
 
