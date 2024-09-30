@@ -50,10 +50,10 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
-    let mut out_file: Box<dyn Write> = match &args.out_file {
-        Some(out_name) => Box::new(File::create(out_name)?),
-        _ => Box::new(io::stdout()),
-    };
+    // let mut out_file: Box<dyn Write> = match &args.out_file {
+    //     Some(out_name) => Box::new(File::create(out_name)?),
+    //     _ => Box::new(io::stdout()),
+    // };
 
     // let mut print = |num: u64, text: &str| -> Result<()> {
     //     if num > 0 {
@@ -66,10 +66,12 @@ pub fn run(args: Args) -> Result<()> {
     //     Ok(())
     // };
 
-    let input = Input::new(&url)?;
-    let output = Output::new(input);
+    // let input = Input::new(&url)?;
+    // let output = Output::new(input);
+    let data = Data::new(&url)?;
+    println!("my data: {data:?}");
 
-    println!("{:?}", output);
+    // println!("{:?}", output);
     // grab_data(&url)?;
     // let parsed_url = parse_url(&url);
     // let parsed_filetype = parse_filetype(&url);
