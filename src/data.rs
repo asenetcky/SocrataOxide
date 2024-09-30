@@ -63,6 +63,28 @@ pub fn grab_response(url: &Url, file_type: &FileType) -> Result<Response, anyhow
     Ok(response)
 }
 
+pub fn grab_data(file_type: &FileType, output_response: &Response) -> Result<polars::prelude::DataFrame, PolarsError> {
+    let dataframe = match file_type {
+        FileType::Json => {
+            let json: Value = output_response.json().unwrap();
+            let json_str = serde_json::to_string(&json).unwrap();
+            let cursor = Cursor::new(json_str);
+            let df = polars::prelude::JsonReader::new(cursor).finish().unwrap();
+            df
+        }
+        FileType::Csv => {
+            let csv = output_response.text().unwrap();
+            let cursor = Cursor::new(csv);
+            let df = polars::prelude::CsvReader::new(cursor).finish().unwrap();
+            df
+        }
+        FileType::UnknownMimeType => {
+            panic!("UnknownMimeType");
+        }
+    }
+    Ok(dataframe)
+}
+
 //         pub fn grab_data(self: Self) -> Result<(), anyhow::Error> {
 //         let url = self.url;
 //         let file_type = self.file_type;

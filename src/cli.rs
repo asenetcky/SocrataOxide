@@ -1,8 +1,8 @@
 use crate::data::*;
 use anyhow::Result;
 use clap::Parser;
-// use std::fs::File;
-// use std::io::{self, BufRead, BufReader, Write};
+use std::fs::File;
+use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
@@ -25,6 +25,10 @@ pub struct Args {
     )]
     username: String,
 
+    /// Output File
+    #[arg(value_name = "OUT_FILE")]
+    out_file: Option<String>,
+
     /// Password
     #[arg(
         short = 'p',
@@ -46,8 +50,25 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
+    let mut out_file: Box<dyn Write> = match &args.out_file {
+        Some(out_name) => Box::new(File::create(out_name)?),
+        _ => Box::new(io::stdout()),
+    };
+
+    // let mut print = |num: u64, text: &str| -> Result<()> {
+    //     if num > 0 {
+    //         if args.count {
+    //             write!(out_file, "{num:>4} {text}")?;
+    //         } else {
+    //             write!(out_file, "{text}")?;
+    //         }
+    //     };
+    //     Ok(())
+    // };
+
     let input = Input::new(&url)?;
     let output = Output::new(input);
+
     println!("{:?}", output);
     // grab_data(&url)?;
     // let parsed_url = parse_url(&url);
