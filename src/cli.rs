@@ -59,8 +59,9 @@ pub fn run(args: Args) -> Result<()> {
             IpcWriter::new(&mut file).finish(&mut data.df)?;
         }
         OutType::Csv => {
-            // data.df.write_csv(output.file_name.unwrap())?;
-            println!("{:?}", data.df);
+            let filename = output.file_name.unwrap().to_string();
+            let mut file = File::create(filename).expect("could not create file");
+            CsvWriter::new(&mut file).finish(&mut data.df)?;
         }
         OutType::Stdout => {
             // data.df.write_csv(output.file_name.unwrap())?;
