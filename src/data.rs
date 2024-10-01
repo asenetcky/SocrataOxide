@@ -27,7 +27,7 @@ pub struct OutFile {
 
 #[derive(Debug)]
 pub struct Data {
-    df: DataFrame,
+    pub df: DataFrame,
     url: Url,
     file_type: FileType,
 }

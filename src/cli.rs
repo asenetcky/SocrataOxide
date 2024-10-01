@@ -1,6 +1,8 @@
 use crate::data::*;
 use anyhow::Result;
 use clap::Parser;
+use polars::prelude::*;
+use polars_io::ipc::IpcWriter;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
 
@@ -48,12 +50,29 @@ pub fn run(args: Args) -> Result<()> {
     let _password = args.password;
 
     let output = OutFile::new(args.out_file);
+    let mut data = Data::new(&url)?;
 
-    let mut out_file: Box<dyn Write> = match output.out_type {
-        OutType::Arrow => Box::new(File::create(output.file_name.unwrap())?),
-        OutType::Csv => Box::new(File::create(output.file_name.unwrap())?),
-        OutType::Stdout => Box::new(io::stdout()),
-    };
+    match output.out_type {
+        OutType::Arrow => {
+            let filename = output.file_name.unwrap().to_string();
+            let mut file = File::create(filename).expect("could not create file");
+            IpcWriter::new(&mut file).finish(&mut data.df)?;
+        }
+        OutType::Csv => {
+            // data.df.write_csv(output.file_name.unwrap())?;
+            println!("{:?}", data.df);
+        }
+        OutType::Stdout => {
+            // data.df.write_csv(output.file_name.unwrap())?;
+            println!("{:?}", data.df);
+        }
+    }
+
+    // let mut out_file: Box<dyn Write> = match output.out_type {
+    //     OutType::Arrow => Box::new(File::create(output.file_name.unwrap())?),
+    //     OutType::Csv => Box::new(File::create(output.file_name.unwrap())?),
+    //     OutType::Stdout => Box::new(io::stdout()),
+    // };
 
     // let mut print = |num: u64, text: &str| -> Result<()> {
     //     if num > 0 {
@@ -65,8 +84,6 @@ pub fn run(args: Args) -> Result<()> {
     //     };
     //     Ok(())
     // };
-
-    let data = Data::new(&url)?;
 
     Ok(())
 }

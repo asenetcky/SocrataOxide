@@ -7,6 +7,7 @@ edition = "2021"
 anyhow = "1.0.88"
 clap = { version = "4.5.17", features = ["derive"] }
 polars = { version = "0.43.1", features = ["json"] }
+polars-io = { version = "0.43.1", features = ["csv", "ipc"] }
 reqwest = { version = "0.12.7", features = ["blocking", "json"] }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
