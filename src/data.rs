@@ -21,8 +21,8 @@ pub enum OutType {
 
 #[derive(Debug)]
 pub struct OutFile {
-    out_type: OutType,
-    file_name: Option<String>,
+    pub out_type: OutType,
+    pub file_name: Option<String>,
 }
 
 #[derive(Debug)]

@@ -16,6 +16,10 @@ pub struct Args {
     #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
     api_key: String,
 
+    /// Output File
+    #[arg(value_name = "OUT_FILE")]
+    out_file: Option<String>,
+
     /// Username
     #[arg(
         short = 'n',
@@ -24,10 +28,6 @@ pub struct Args {
         value_name = "USERNAME"
     )]
     username: String,
-
-    /// Output File
-    #[arg(value_name = "OUT_FILE")]
-    out_file: Option<String>,
 
     /// Password
     #[arg(
@@ -47,10 +47,13 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
-    // let mut out_file: Box<dyn Write> = match &args.out_file {
-    //     Some(out_name) => Box::new(File::create(out_name)?),
-    //     _ => Box::new(io::stdout()),
-    // };
+    let output = OutFile::new(args.out_file);
+
+    let mut out_file: Box<dyn Write> = match output.out_type {
+        OutType::Arrow => Box::new(File::create(output.file_name.unwrap())?),
+        OutType::Csv => Box::new(File::create(output.file_name.unwrap())?),
+        OutType::Stdout => Box::new(io::stdout()),
+    };
 
     // let mut print = |num: u64, text: &str| -> Result<()> {
     //     if num > 0 {
