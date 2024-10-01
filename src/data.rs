@@ -13,6 +13,19 @@ pub enum FileType {
 }
 
 #[derive(Debug)]
+pub enum OutType {
+    Stdout,
+    Arrow,
+    Csv,
+}
+
+#[derive(Debug)]
+pub struct OutFile {
+    out_type: OutType,
+    file_name: Option<String>,
+}
+
+#[derive(Debug)]
 pub struct Data {
     df: DataFrame,
     url: Url,
@@ -50,5 +63,26 @@ impl Data {
         };
 
         Ok(Self { df, url, file_type })
+    }
+}
+
+impl OutFile {
+    pub fn new(file_name: Option<String>) -> Self {
+        let out_type = match &file_name {
+            Some(file_name) => {
+                let file_type = match file_name.split('.').last() {
+                    Some("arrow") => OutType::Arrow,
+                    Some("csv") => OutType::Csv,
+                    _ => panic!("Unknown file type"),
+                };
+                file_type
+            }
+            None => OutType::Stdout,
+        };
+
+        Self {
+            out_type,
+            file_name,
+        }
     }
 }
