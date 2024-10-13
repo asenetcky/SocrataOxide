@@ -12,12 +12,9 @@ pub fn run(args: Args) -> Result<()> {
     let _username = args.username;
     let _password = args.password;
 
-    let my_url_struct = OpenDataUrl::new(&args.dataset_url, args.limit, args.offset);
-    // let my_url = &my_url_struct?.with_params();
-
+    let open_data = OpenDataUrl::new(&args.dataset_url, args.limit, args.offset);
     let output = OutFile::new(args.out_file);
-    // data::new will eventually use &my_url.url or similiar
-    let mut data = Data::new(&my_url_struct?);
+    let data = Data::new(&open_data?);
 
     match output.out_type {
         OutType::Arrow => {

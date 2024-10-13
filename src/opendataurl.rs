@@ -28,9 +28,9 @@ pub struct OpenDataUrl {
 #[allow(dead_code)]
 impl OpenDataUrl {
     pub fn new(url: &str, limit_flag: Option<u32>, offset_flag: Option<u32>) -> Result<Self> {
-        let url = Url::parse(url)?;
-        let mut limit = limit_flag;
-        let mut offset = offset_flag;
+        let mut url = Url::parse(url)?;
+        let limit = limit_flag;
+        let offset = offset_flag;
 
         let file_type = match url.path().split('.').last() {
             Some("json") => FileType::Json,
@@ -38,13 +38,18 @@ impl OpenDataUrl {
             _ => FileType::UnknownMimeType,
         };
 
-        for (key, value) in url.query_pairs() {
-            match key.as_ref() {
-                "$limit" => limit = value.parse().ok().or(limit),
-                "$offset" => offset = value.parse().ok().or(offset),
-                _ => {} // Ignore other parameters
-            }
+        let binding = url.clone();
+        let mut pairs = binding.query_pairs().collect::<Vec<_>>();
+
+        if let Some(limit_flag) = limit_flag {
+            pairs.push(("$limit".to_string().into(), limit_flag.to_string().into()));
         }
+
+        if let Some(offset_flag) = offset_flag {
+            pairs.push(("$offset".to_string().into(), offset_flag.to_string().into()));
+        }
+
+        url.query_pairs_mut().clear().extend_pairs(pairs);
 
         Ok(OpenDataUrl {
             url,
@@ -52,21 +57,5 @@ impl OpenDataUrl {
             offset,
             file_type,
         })
-    }
-
-    pub fn with_params(&self) -> Url {
-        let mut url = self.url.clone();
-        let mut pairs = url.query_pairs().into_owned().collect::<Vec<_>>();
-
-        if let Some(limit) = self.limit {
-            pairs.push(("$limit".to_string(), limit.to_string()));
-        }
-
-        if let Some(offset) = self.offset {
-            pairs.push(("$offset".to_string(), offset.to_string()));
-        }
-
-        url.query_pairs_mut().clear().extend_pairs(pairs);
-        url
     }
 }
