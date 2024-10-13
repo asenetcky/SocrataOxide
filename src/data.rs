@@ -3,14 +3,8 @@ use polars::prelude::*;
 use reqwest::blocking;
 use serde_json::Value;
 use std::io::Cursor;
-use url::Url;
 
-#[derive(Debug)]
-pub enum FileType {
-    Json,
-    Csv,
-    UnknownMimeType,
-}
+use crate::opendataurl::*;
 
 #[derive(Debug)]
 pub enum OutType {
@@ -29,24 +23,16 @@ pub struct OutFile {
 #[derive(Debug)]
 pub struct Data {
     pub df: DataFrame,
-    // url: Url,
-    // file_type: FileType,
 }
 
 // this doesnt work with urls that have the params in it now
 // need to make data new() accept opendataurl struct
 // and then it can its magic with file etc...
 impl Data {
-    pub fn new(url: &Url) -> Result<Self> {
-        let file_type = match url.path().split('.').last() {
-            Some("json") => FileType::Json,
-            Some("csv") => FileType::Csv,
-            _ => FileType::UnknownMimeType,
-        };
-
-        let df = match file_type {
+    pub fn new(opendata: &OpenDataUrl) -> Result<Self> {
+        let df = match opendata.file_type {
             FileType::Json => {
-                let response = blocking::get(url.as_str())?;
+                let response = blocking::get(opendata.url.as_str())?;
                 let json: Value = response.json()?;
                 let json_str = serde_json::to_string(&json)?;
                 let cursor = Cursor::new(json_str);
@@ -54,7 +40,7 @@ impl Data {
                 df
             }
             FileType::Csv => {
-                let response = blocking::get(url.as_str())?;
+                let response = blocking::get(opendata.url.as_str())?;
                 let csv = response.text()?;
                 let cursor = Cursor::new(csv);
                 let df = polars::prelude::CsvReader::new(cursor).finish()?;
