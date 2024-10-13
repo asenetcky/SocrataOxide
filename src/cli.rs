@@ -1,11 +1,4 @@
-use crate::data::*;
-// use crate::opendataurl::*;
-use anyhow::Result;
 use clap::Parser;
-use polars::prelude::*;
-use polars_io::ipc::IpcWriter;
-use std::fs::File;
-// use std::io::{self, BufRead, BufReader, Write};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
@@ -13,15 +6,15 @@ use std::fs::File;
 pub struct Args {
     /// URL
     #[arg(value_name = "URL")]
-    dataset_url: String, // work on vectors later
+    pub dataset_url: String, // work on vectors later
 
     /// Api Key
     #[arg(short = 'k', long = "key", default_value = "-", value_name = "API_KEY")]
-    api_key: String,
+    pub api_key: String,
 
     /// Output File
     #[arg(value_name = "OUT_FILE")]
-    out_file: Option<String>,
+    pub out_file: Option<String>,
 
     /// Username
     #[arg(
@@ -30,7 +23,7 @@ pub struct Args {
         default_value = "-",
         value_name = "USERNAME"
     )]
-    username: String,
+    pub username: String,
 
     /// Password
     #[arg(
@@ -39,47 +32,13 @@ pub struct Args {
         default_value = "-",
         value_name = "PASSWORD"
     )]
-    password: String,
+    pub password: String,
 
     /// Offset
     #[arg(short = 'o', long = "offset", value_name = "OFFSET")]
-    offset: Option<u32>,
+    pub offset: Option<u32>,
 
     /// Limit
     #[arg(short = 'l', long = "limit", value_name = "LIMIT")]
-    limit: Option<u32>,
-}
-
-pub fn run(args: Args) -> Result<()> {
-    let url = args.dataset_url;
-    let _api_key = args.api_key;
-    let _username = args.username;
-    let _password = args.password;
-    let _limit = args.limit;
-    let _offset = args.offset;
-
-    let output = OutFile::new(args.out_file);
-    let mut data = Data::new(&url)?;
-
-    match output.out_type {
-        OutType::Arrow => {
-            let filename = output.file_name.unwrap().to_string();
-            let mut file = File::create(filename).expect("could not create file");
-            IpcWriter::new(&mut file).finish(&mut data.df)?;
-        }
-        OutType::Csv => {
-            let filename = output.file_name.unwrap().to_string();
-            let mut file = File::create(filename).expect("could not create file");
-            CsvWriter::new(&mut file).finish(&mut data.df)?;
-        }
-        OutType::Json => {
-            let filename = output.file_name.unwrap().to_string();
-            let mut file = File::create(filename).expect("could not create file");
-            JsonWriter::new(&mut file).finish(&mut data.df)?;
-        }
-        OutType::Stdout => {
-            println!("{:?}", data.df);
-        }
-    }
-    Ok(())
+    pub limit: Option<u32>,
 }
