@@ -29,13 +29,15 @@ pub struct OutFile {
 #[derive(Debug)]
 pub struct Data {
     pub df: DataFrame,
-    url: Url,
-    file_type: FileType,
+    // url: Url,
+    // file_type: FileType,
 }
 
+// this doesnt work with urls that have the params in it now
+// need to make data new() accept opendataurl struct
+// and then it can its magic with file etc...
 impl Data {
-    pub fn new(url: &str) -> Result<Self> {
-        let url = Url::parse(url)?;
+    pub fn new(url: &Url) -> Result<Self> {
         let file_type = match url.path().split('.').last() {
             Some("json") => FileType::Json,
             Some("csv") => FileType::Csv,
@@ -63,7 +65,7 @@ impl Data {
             }
         };
 
-        Ok(Self { df, url, file_type })
+        Ok(Self { df })
     }
 }
 

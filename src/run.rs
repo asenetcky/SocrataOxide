@@ -2,6 +2,7 @@ use crate::cli::*;
 use crate::data::*;
 use crate::opendataurl::*;
 
+use anyhow::Context;
 use anyhow::Result;
 use clap::Parser;
 use polars::prelude::*;
@@ -16,11 +17,12 @@ pub fn run(args: Args) -> Result<()> {
     let limit = args.limit;
     let offset = args.offset;
 
-    let my_url = OpenDataUrl::new(&url, limit, offset);
-    println!("{:?}", my_url);
+    let my_url_struct = OpenDataUrl::new(&url, limit, offset);
+    let my_url = &my_url_struct?.with_params();
 
     let output = OutFile::new(args.out_file);
-    let mut data = Data::new(&url)?;
+    // data::new will eventually use &my_url.url or similiar
+    let mut data = Data::new(&my_url)?;
 
     match output.out_type {
         OutType::Arrow => {
