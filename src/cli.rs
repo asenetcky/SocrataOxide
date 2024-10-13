@@ -42,22 +42,12 @@ pub struct Args {
     password: String,
 
     /// Offset
-    #[arg(
-        short = 'o',
-        long = "offset",
-        default_value = "0",
-        value_name = "OFFSET"
-    )]
-    offset: u32,
+    #[arg(short = 'o', long = "offset", value_name = "OFFSET")]
+    offset: Option<u32>,
 
     /// Limit
-    #[arg(
-        short = 'l',
-        long = "limit",
-        default_value = "1000",
-        value_name = "LIMIT"
-    )]
-    limit: u32,
+    #[arg(short = 'l', long = "limit", value_name = "LIMIT")]
+    limit: Option<u32>,
 }
 
 pub fn run(args: Args) -> Result<()> {
@@ -81,6 +71,11 @@ pub fn run(args: Args) -> Result<()> {
             let filename = output.file_name.unwrap().to_string();
             let mut file = File::create(filename).expect("could not create file");
             CsvWriter::new(&mut file).finish(&mut data.df)?;
+        }
+        OutType::Json => {
+            let filename = output.file_name.unwrap().to_string();
+            let mut file = File::create(filename).expect("could not create file");
+            JsonWriter::new(&mut file).finish(&mut data.df)?;
         }
         OutType::Stdout => {
             println!("{:?}", data.df);
