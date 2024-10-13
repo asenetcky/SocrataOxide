@@ -1,9 +1,9 @@
 use anyhow::Result;
 use polars::prelude::*;
-use reqwest::{blocking, blocking::Response};
+use reqwest::blocking;
 use serde_json::Value;
 use std::io::Cursor;
-use url::{ParseError, Url};
+use url::Url;
 
 #[derive(Debug)]
 pub enum FileType {
@@ -26,12 +26,6 @@ pub struct OutFile {
 }
 
 #[derive(Debug)]
-struct Pagination {
-    limit: i32,
-    offset: i32,
-}
-
-#[derive(Debug)]
 pub struct Data {
     pub df: DataFrame,
     url: Url,
@@ -45,26 +39,6 @@ impl Data {
             Some("json") => FileType::Json,
             Some("csv") => FileType::Csv,
             _ => FileType::UnknownMimeType,
-        };
-
-        // since not everyone wants to escape all the bash expansion
-        // characters, I need to add flags for this
-        // Extract query parameters
-        let mut url_limit = None;
-        let mut url_offset = None;
-
-        // this is a target for an enum if there are more query parameters
-        for (key, value) in url.query_pairs() {
-            match key.as_ref() {
-                "$limit" => url_limit = value.parse().ok(),
-                "$offset" => url_offset = value.parse().ok(),
-                _ => {} // Ignore other parameters
-            }
-        }
-
-        let pagination = Pagination {
-            limit: url_limit.unwrap_or(10), // Default limit
-            offset: url_offset.unwrap_or(0),
         };
 
         let df = match file_type {

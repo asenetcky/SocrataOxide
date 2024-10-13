@@ -45,7 +45,7 @@ pub struct Args {
     #[arg(
         short = 'o',
         long = "offset",
-        default_value = "0",
+        default_missing_value = "0",
         value_name = "OFFSET"
     )]
     offset: u32,
@@ -54,7 +54,7 @@ pub struct Args {
     #[arg(
         short = 'l',
         long = "limit",
-        default_value = "1000",
+        default_missing_value = "1000",
         value_name = "LIMIT"
     )]
     limit: u64,
