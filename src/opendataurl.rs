@@ -9,12 +9,20 @@ use url::Url;
 // we'll grab the params from the url or the flags
 // url takes priority
 
+#[derive(Debug)]
+pub enum FileType {
+    Json,
+    Csv,
+    UnknownMimeType,
+}
+
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct OpenDataUrl {
-    url: Url,
+    pub url: Url,
     limit: Option<u32>,
     offset: Option<u32>,
+    pub file_type: FileType,
 }
 
 #[allow(dead_code)]
@@ -24,6 +32,12 @@ impl OpenDataUrl {
         let mut limit = limit_flag;
         let mut offset = offset_flag;
 
+        let file_type = match url.path().split('.').last() {
+            Some("json") => FileType::Json,
+            Some("csv") => FileType::Csv,
+            _ => FileType::UnknownMimeType,
+        };
+
         for (key, value) in url.query_pairs() {
             match key.as_ref() {
                 "$limit" => limit = value.parse().ok().or(limit),
@@ -32,7 +46,12 @@ impl OpenDataUrl {
             }
         }
 
-        Ok(OpenDataUrl { url, limit, offset })
+        Ok(OpenDataUrl {
+            url,
+            limit,
+            offset,
+            file_type,
+        })
     }
 
     pub fn with_params(&self) -> Url {
