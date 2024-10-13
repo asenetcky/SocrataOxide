@@ -2,46 +2,41 @@ use crate::cli::*;
 use crate::data::*;
 use crate::opendataurl::*;
 
-use anyhow::Context;
 use anyhow::Result;
-use clap::Parser;
 use polars::prelude::*;
 use polars_io::ipc::IpcWriter;
 use std::fs::File;
 
 pub fn run(args: Args) -> Result<()> {
-    let url = args.dataset_url;
     let _api_key = args.api_key;
     let _username = args.username;
     let _password = args.password;
-    let limit = args.limit;
-    let offset = args.offset;
 
-    let my_url_struct = OpenDataUrl::new(&url, limit, offset);
-    let my_url = &my_url_struct?.with_params();
+    let my_url_struct = OpenDataUrl::new(&args.dataset_url, args.limit, args.offset);
+    // let my_url = &my_url_struct?.with_params();
 
     let output = OutFile::new(args.out_file);
     // data::new will eventually use &my_url.url or similiar
-    let mut data = Data::new(&my_url)?;
+    let mut data = Data::new(&my_url_struct?);
 
     match output.out_type {
         OutType::Arrow => {
             let filename = output.file_name.unwrap().to_string();
             let mut file = File::create(filename).expect("could not create file");
-            IpcWriter::new(&mut file).finish(&mut data.df)?;
+            IpcWriter::new(&mut file).finish(&mut data.unwrap().df)?;
         }
         OutType::Csv => {
             let filename = output.file_name.unwrap().to_string();
             let mut file = File::create(filename).expect("could not create file");
-            CsvWriter::new(&mut file).finish(&mut data.df)?;
+            CsvWriter::new(&mut file).finish(&mut data.unwrap().df)?;
         }
         OutType::Json => {
             let filename = output.file_name.unwrap().to_string();
             let mut file = File::create(filename).expect("could not create file");
-            JsonWriter::new(&mut file).finish(&mut data.df)?;
+            JsonWriter::new(&mut file).finish(&mut data.unwrap().df)?;
         }
         OutType::Stdout => {
-            println!("{:?}", data.df);
+            println!("{:?}", data.unwrap().df);
         }
     }
     Ok(())
