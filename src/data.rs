@@ -16,6 +16,7 @@ pub enum FileType {
 pub enum OutType {
     Stdout,
     Arrow,
+    Json,
     Csv,
 }
 
@@ -73,6 +74,7 @@ impl OutFile {
                 let file_type = match file_name.split('.').last() {
                     Some("arrow") => OutType::Arrow,
                     Some("csv") => OutType::Csv,
+                    Some("json") => OutType::Json,
                     _ => panic!("Unknown file type"),
                 };
                 file_type
