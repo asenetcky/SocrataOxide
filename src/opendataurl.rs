@@ -1,3 +1,4 @@
+use anyhow::Result;
 use url::Url;
 
 // we'll keep these as optional
@@ -10,32 +11,31 @@ use url::Url;
 
 #[allow(dead_code)]
 #[derive(Debug)]
-struct OpenDataUrl {
+pub struct OpenDataUrl {
     url: Url,
     limit: Option<u32>,
     offset: Option<u32>,
 }
 
-// impl OpenDataUrl {
-//     fn new(limit: LimitMode, offset: u32) -> Self {}
-// }
+#[allow(dead_code)]
+impl OpenDataUrl {
+    pub fn new(url: &str, limit_flag: Option<u32>, offset_flag: Option<u32>) -> Result<Self> {
+        let url = Url::parse(url)?;
+        let mut limit = None;
+        let mut offset = None;
 
-// // since not everyone wants to escape all the bash expansion
-// // characters, I need to add clap flags for this
-// // Extract query parameters
-// let mut url_limit = None;
-// let mut url_offset = None;
+        for (key, value) in url.query_pairs() {
+            match key.as_ref() {
+                "$limit" => limit = value.parse().ok(),
+                "$offset" => offset = value.parse().ok(),
+                _ => {} // Ignore other parameters
+            }
+        }
 
-// // this is a target for an enum if there are more query parameters
-// for (key, value) in url.query_pairs() {
-//     match key.as_ref() {
-//         "$limit" => url_limit = value.parse().ok(),
-//         "$offset" => url_offset = value.parse().ok(),
-//         _ => {} // Ignore other parameters
-//     }
-// }
+        // prioritize url params over flags
+        let limit = limit.or(limit_flag);
+        let offset = offset.or(offset_flag);
 
-// let pagination = Pagination {
-//     limit: url_limit.unwrap_or(10), // Default limit
-//     offset: url_offset.unwrap_or(0),
-// };
+        Ok(OpenDataUrl { url, limit, offset })
+    }
+}
