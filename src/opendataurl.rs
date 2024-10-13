@@ -1,23 +1,23 @@
 use url::Url;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct OpenDataUrl {
     url: Url,
-    limit: u32,
+    limit: LimitMode,
     offset: u32,
 }
 
 // this will eventually be the target of the limit flag
+#[allow(dead_code)]
 #[derive(Debug)]
-pub enum FetchMode {
+pub enum LimitMode {
     All, // this will eventually be the default for limit
     Limited(u32),
 }
 
 // impl OpenDataUrl {
-//     fn new(limit: u32, offset: u32) -> Self {
-//         Self { limit, offset }
-//     }
+//     fn new(limit: LimitMode, offset: u32) -> Self {}
 // }
 
 // // since not everyone wants to escape all the bash expansion
