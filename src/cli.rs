@@ -41,6 +41,23 @@ pub struct Args {
     password: String,
     // maybe some helpers for the page vs row number attribute in the api
     // ^ in case folks dont want everything by default
+    /// Offset
+    #[arg(
+        short = 'o',
+        long = "offset",
+        default_value = "0",
+        value_name = "OFFSET"
+    )]
+    offset: u32,
+
+    /// Limit
+    #[arg(
+        short = 'l',
+        long = "limit",
+        default_value = "1000",
+        value_name = "LIMIT"
+    )]
+    limit: u64,
 }
 
 pub fn run(args: Args) -> Result<()> {
@@ -48,6 +65,8 @@ pub fn run(args: Args) -> Result<()> {
     let _api_key = args.api_key;
     let _username = args.username;
     let _password = args.password;
+    let _limit = args.limit;
+    let _offset = args.offset;
 
     let output = OutFile::new(args.out_file);
     let mut data = Data::new(&url)?;
