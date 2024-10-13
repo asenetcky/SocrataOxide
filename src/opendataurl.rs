@@ -7,6 +7,13 @@ struct OpenDataUrl {
     offset: u32,
 }
 
+// this will eventually be the target of the limit flag
+#[derive(Debug)]
+pub enum FetchMode {
+    All, // this will eventually be the default for limit
+    Limited(u32),
+}
+
 // impl OpenDataUrl {
 //     fn new(limit: u32, offset: u32) -> Self {
 //         Self { limit, offset }

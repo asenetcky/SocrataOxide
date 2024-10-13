@@ -1,4 +1,5 @@
 use crate::data::*;
+use crate::opendataurl::*;
 use anyhow::Result;
 use clap::Parser;
 use polars::prelude::*;
@@ -39,13 +40,12 @@ pub struct Args {
         value_name = "PASSWORD"
     )]
     password: String,
-    // maybe some helpers for the page vs row number attribute in the api
-    // ^ in case folks dont want everything by default
+
     /// Offset
     #[arg(
         short = 'o',
         long = "offset",
-        default_missing_value = "0",
+        default_value = "0",
         value_name = "OFFSET"
     )]
     offset: u32,
@@ -54,10 +54,10 @@ pub struct Args {
     #[arg(
         short = 'l',
         long = "limit",
-        default_missing_value = "1000",
+        default_value = "1000",
         value_name = "LIMIT"
     )]
-    limit: u64,
+    limit: u32,
 }
 
 pub fn run(args: Args) -> Result<()> {
